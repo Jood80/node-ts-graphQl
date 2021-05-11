@@ -1,16 +1,28 @@
 {
   "defaultSeverity": "error",
+  "env": {
+    "es2021": true,
+    "node": true
+  },
   "extends": [
     "tslint:latest",
-    "tslint-eslint-rules",
-    "tslint-config-prettier"
+    "tslint-config-prettier",
+    "prettier"
+
   ],
+  "plugins": ["prettier"],
+
   "jsRules":{},
   "rule":{
     "member-access": false,
     "object-literal-sort-keys": false,
     "ordered-imports": false,
-    "interface-name": false
+    "interface-name": false,
+    "indent": ["error", 2],
+    "linebreak-style": ["error", "unix"],
+    "quotes": ["error", "single"],
+    "semi": ["error", "never"],
+    "prettier/prettier": "error"
   },
   "rulesDirectory":[]
 }
