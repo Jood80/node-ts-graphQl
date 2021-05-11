@@ -5,7 +5,9 @@
     "lib": [
       "dom",
       "es2017",
-      "esnext.asynciterable"
+      "esnext.asynciterable",
+      "es5",
+      "es6"
     ],
     "moduleResolution": "node",
     "declaration": true,
@@ -13,18 +15,18 @@
     "rootDir": "src",
     "outDir": "./dist",
     "removeComments": false,
-    "strict": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
     "strictFunctionTypes": true,
-    "strictPropertyInitialization": true,
     "noImplicitThis": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
   },
   "exclude": [
     "node_modules"
