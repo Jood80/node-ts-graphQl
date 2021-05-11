@@ -5,12 +5,18 @@ export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column('text')
   firstName: string;
 
-  @Column()
+  @Column({ type: 'varchar', length: '230' })
   lastName: string;
 
   @Column()
   age: number;
+
+  @Column({ type: 'text', unique: true })
+  email: string;
+
+  @Column({ type: 'boolean', default: false })
+  isConfirmed: boolean;
 }
