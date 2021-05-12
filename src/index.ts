@@ -54,6 +54,7 @@ const resolvers: ResolverMap = {
       const profile = await Profile.save({ ...args.profile });
       const user = await User.save(args);
       user.profile = profile
+      user.profile.id = profile.ProfileId
 
       return {
         ...user,
