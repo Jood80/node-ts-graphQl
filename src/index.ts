@@ -1,8 +1,9 @@
 import 'reflect-metadata';
 import { GraphQLServer } from 'graphql-yoga';
 import { createConnection } from 'typeorm';
-import { User } from './entity/User';
 import { ResolverMap } from './types/ResolverTypes';
+import { User } from './entity/User';
+import { Profile } from './entity/Profile';
 
 const typeDefs = `
   type User {
@@ -36,15 +37,15 @@ const resolvers: ResolverMap = {
   },
   Mutation: {
     createUser: (_, args) => User.save(args),
-    updateUser: async(_, { id, ...args }) => {
+    updateUser: async (_, { id, ...args }) => {
       try {
-       await User.update(id, args);
+        await User.update(id, args);
       } catch (error) {
         return false;
       }
       return true;
     },
-    deleteUser: async(_, { id }) => {
+    deleteUser: async (_, { id }) => {
       try {
         await User.remove(id);
       } catch (error) {
@@ -57,7 +58,25 @@ const resolvers: ResolverMap = {
 
 const server = new GraphQLServer({ typeDefs, resolvers });
 createConnection()
-  .then(() => {
+  .then(async (connection) => {
+    const profile = new Profile();
+    profile.gender = 'Female';
+    profile.photo = 'her.jpg';
+    await connection.manager.save(profile);
+
+    const user = new User();
+    user.firstName = 'Banana';
+    user.lastName = 'Smith';
+    user.age = 5;
+    user.email = 'Banana@gmail.com'
+    
+    user.profile = profile;
+    await connection.manager.save(user);
+
+    const userRepository = connection.getRepository(User);
+    const users = await userRepository.find({ relations: ['profile'] });
+    console.log({ users });
+
     server.start(() => console.log('Server is running on localhost:4000'));
   })
   .catch((error) => console.log(error));
