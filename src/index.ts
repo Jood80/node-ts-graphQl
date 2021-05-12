@@ -13,6 +13,13 @@ const typeDefs = `
     age: Int!
     email: String!
     isConfirmed: Boolean!
+    profile: Profile
+  }
+
+  type Profile {
+    id: Int
+    gender: String!
+    photo: String
   }
 
   type Query {
@@ -21,8 +28,13 @@ const typeDefs = `
     users: [User!]!
   }
 
+  input ProfileInput {
+    id: Int
+    gender: String!
+  }
+
   type Mutation {
-    createUser(firstName: String!, lastName: String!, age: Int!, email: String!, isConfirmed: Boolean!): User!
+    createUser(firstName: String!, lastName: String!, age: Int, email: String, isConfirmed: Boolean, profile: ProfileInput): User!
     updateUser(id: Int!, firstName: String, lastName: String, age: Int, email: String, isConfirmed: Boolean): Boolean
     deleteUser(id: Int!): Boolean
 
@@ -32,11 +44,22 @@ const typeDefs = `
 const resolvers: ResolverMap = {
   Query: {
     hello: (_, { name }) => `Hello ${name || 'World'}`,
-    user: (_, { id }) => User.findOne({ where: { id } }),
-    users: () => User.find(),
+    user: async (_, { id }) =>
+      await User.findOne(id, { relations: ['profile'] }),
+    users: async () => await User.find({ relations: ['profile'] }),
   },
+
   Mutation: {
-    createUser: (_, args) => User.save(args),
+    createUser: async (_, args) => {
+      const profile = await Profile.save({ ...args.profile });
+      const user = await User.save(args);
+      user.profile = profile
+
+      return {
+        ...user,
+        profile,
+      };
+    },
     updateUser: async (_, { id, ...args }) => {
       try {
         await User.update(id, args);
@@ -58,25 +81,7 @@ const resolvers: ResolverMap = {
 
 const server = new GraphQLServer({ typeDefs, resolvers });
 createConnection()
-  .then(async (connection) => {
-    const profile = new Profile();
-    profile.gender = 'Female';
-    profile.photo = 'her.jpg';
-    await connection.manager.save(profile);
-
-    const user = new User();
-    user.firstName = 'Banana';
-    user.lastName = 'Smith';
-    user.age = 5;
-    user.email = 'Banana@gmail.com'
-    
-    user.profile = profile;
-    await connection.manager.save(user);
-
-    const userRepository = connection.getRepository(User);
-    const users = await userRepository.find({ relations: ['profile'] });
-    console.log({ users });
-
+  .then(() => {
     server.start(() => console.log('Server is running on localhost:4000'));
   })
   .catch((error) => console.log(error));

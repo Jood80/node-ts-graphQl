@@ -1,13 +1,13 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, BaseEntity } from 'typeorm';
 
 @Entity()
-export class Profile {
+export class Profile extends BaseEntity {
   @PrimaryGeneratedColumn()
-  id: number;
+  public ProfileId: number;
 
   @Column()
   gender: string;
 
-  @Column()
+  @Column({ nullable: true })
   photo: string;
 }

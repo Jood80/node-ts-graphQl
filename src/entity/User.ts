@@ -28,7 +28,13 @@ export class User extends BaseEntity {
   @Column({ type: 'boolean', default: false })
   isConfirmed: boolean;
 
-  @OneToOne(() => Profile)
-  @JoinColumn()
+  @Column({ type: 'int', nullable: true })
+  ProfileId: number;
+  
+  @OneToOne(() => Profile, (entity) => entity.ProfileId, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'ProfileId' })
   profile: Profile;
+
 }
