@@ -43,4 +43,5 @@ type Mutation {
     isConfirmed: Boolean
   ): Boolean
   deleteUser(id: Int!): Boolean
+  registerUser(username: String!, password: String!): Boolean!
 }

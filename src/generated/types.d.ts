@@ -48,7 +48,7 @@ export declare namespace GQL {
 
   interface IProfile {
     __typename: 'Profile';
-    profileId: number | null;
+    id: number | null;
     gender: string;
     photo: string | null;
   }
@@ -58,6 +58,7 @@ export declare namespace GQL {
     createUser: IUser;
     updateUser: boolean | null;
     deleteUser: boolean | null;
+    registerUser: boolean;
   }
 
   interface ICreateUserOnMutationArguments {
@@ -79,7 +80,12 @@ export declare namespace GQL {
   }
 
   interface IDeleteUserOnMutationArguments {
-    id: any ;
+    id: any;
+  }
+
+  interface IRegisterUserOnMutationArguments {
+    username: string;
+    password: string;
   }
 
   interface IProfileInput {
