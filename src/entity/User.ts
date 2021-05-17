@@ -31,7 +31,7 @@ export class User extends BaseEntity {
   @Column({ type: 'int', nullable: true })
   ProfileId: number;
   
-  @OneToOne(() => Profile, (entity) => entity.ProfileId, {
+  @OneToOne(() => Profile, (entity) => entity.id, {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'ProfileId' })
