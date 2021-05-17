@@ -1,67 +1,42 @@
 import 'reflect-metadata';
 import { GraphQLServer } from 'graphql-yoga';
 import { createConnection } from 'typeorm';
+import { importSchema } from 'graphql-import';
+import * as path from 'path';
+
 import { ResolverMap } from './types/ResolverTypes';
 import { User } from './entity/User';
 import { Profile } from './entity/Profile';
+import { GQL } from './generated/types';
 
-const typeDefs = `
-  type User {
-    id: Int!
-    firstName: String!
-    lastName: String!
-    age: Int!
-    email: String!
-    isConfirmed: Boolean!
-    profile: Profile
-  }
-
-  type Profile {
-    id: Int
-    gender: String!
-    photo: String
-  }
-
-  type Query {
-    hello(name: String): String!
-    user(id: Int!): User!
-    users: [User!]!
-  }
-
-  input ProfileInput {
-    id: Int
-    gender: String!
-  }
-
-  type Mutation {
-    createUser(firstName: String!, lastName: String!, age: Int, email: String, isConfirmed: Boolean, profile: ProfileInput): User!
-    updateUser(id: Int!, firstName: String, lastName: String, age: Int, email: String, isConfirmed: Boolean): Boolean
-    deleteUser(id: Int!): Boolean
-
-  }
-`;
+const typeDefs = importSchema(path.join(__dirname, './schema.graphql'));
 
 const resolvers: ResolverMap = {
   Query: {
-    hello: (_, { name }) => `Hello ${name || 'World'}`,
-    user: async (_, { id }) =>
+    hello: (_, { name }: GQL.IHelloOnQueryArguments) =>
+      `Hello ${name || 'World'}`,
+    user: async (_, { id }: GQL.IUserOnQueryArguments) =>
       await User.findOne(id, { relations: ['profile'] }),
     users: async () => await User.find({ relations: ['profile'] }),
   },
 
   Mutation: {
-    createUser: async (_, args) => {
-      const profile = await Profile.save({ ...args.profile });
-      const user = await User.save(args);
-      user.profile = profile
-      user.profile.id = profile.ProfileId
+    createUser: async (_, args: GQL.ICreateUserOnMutationArguments) => {
+      const profile = Profile.create({ ...args.profile });
+      await profile.save();
 
+      const user = User.create(args);
+      await user.save();
       return {
         ...user,
         profile,
       };
     },
-    updateUser: async (_, { id, ...args }) => {
+
+    updateUser: async (
+      _,
+      { id, ...args }: GQL.IUpdateUserOnMutationArguments,
+    ) => {
       try {
         await User.update(id, args);
       } catch (error) {
@@ -69,7 +44,8 @@ const resolvers: ResolverMap = {
       }
       return true;
     },
-    deleteUser: async (_, { id }) => {
+
+    deleteUser: async (_, { id }: GQL.IDeleteUserOnMutationArguments) => {
       try {
         await User.remove(id);
       } catch (error) {
