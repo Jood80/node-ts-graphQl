@@ -19,18 +19,24 @@ export class User extends BaseEntity {
   @Column({ type: 'varchar', length: '230' })
   lastName: string;
 
+  @Column({ type: 'varchar', length: '230' })
+  userName: string;
+
   @Column()
   age: number;
 
   @Column({ type: 'text', unique: true })
   email: string;
 
+  @Column({ type: 'varchar' })
+  password: string;
+
   @Column({ type: 'boolean', default: false })
   isConfirmed: boolean;
 
   @Column({ type: 'int', nullable: true })
   ProfileId: number;
-  
+
   @OneToOne(() => Profile, (entity) => entity.id, {
     onDelete: 'CASCADE',
   })
