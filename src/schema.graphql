@@ -1,0 +1,46 @@
+type User {
+  id: Int!
+  firstName: String!
+  lastName: String!
+  age: Int!
+  email: String!
+  isConfirmed: Boolean!
+  profile: Profile
+}
+
+type Profile {
+  id: Int
+  gender: String!
+  photo: String
+}
+
+type Query {
+  hello(name: String): String!
+  user(id: Int!): User!
+  users: [User!]!
+}
+
+input ProfileInput {
+  id: Int
+  gender: String!
+}
+
+type Mutation {
+  createUser(
+    firstName: String!
+    lastName: String!
+    age: Int
+    email: String
+    isConfirmed: Boolean
+    profile: ProfileInput
+  ): User!
+  updateUser(
+    id: Int!
+    firstName: String
+    lastName: String
+    age: Int
+    email: String
+    isConfirmed: Boolean
+  ): Boolean
+  deleteUser(id: Int!): Boolean
+}
