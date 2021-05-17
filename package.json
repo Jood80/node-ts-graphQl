@@ -1,30 +1,41 @@
 {
-   "name": "node-ts-graphql-bolierplate",
-   "version": "1.0.0",
-   "description": "",
-   "main": "index.js",
-   "dependencies": {
-      "graphql-yoga": "^1.18.3",
-      "nodemon": "^2.0.7",
-      "pg": "^8.4.0",
-      "reflect-metadata": "^0.1.10",
-      "ts-node": "^9.1.1",
-      "tslint-config-prettier": "^1.18.0",
-      "typeorm": "0.2.32",
-      "typescript": "^4.2.4"
-   },
-   "devDependencies": {
-      "@types/node": "^8.0.29",
-      "prettier": "^2.3.0",
-      "tslint": "^6.1.3",
-      "ts-node": "9.1.1",
-      "typescript": "4.2.4"
-   },
-   "scripts": {
-      "start": " nodemon --exec ts-node src/index.ts",
-      "tslint-check": "tslint-config-prettier-check ./tslint.json"
-   },
-   "keywords": [],
-   "author": "",
-   "license": "ISC"
+  "name": "node-ts-graphql-bolierplate",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "graphql-yoga": "^1.18.3",
+    "nodemon": "^2.0.7",
+    "pg": "^8.4.0",
+    "reflect-metadata": "^0.1.10",
+    "ts-node": "^9.1.1",
+    "tslint-config-prettier": "^1.18.0",
+    "typeorm": "0.2.32",
+    "typescript": "^4.2.4"
+  },
+  "devDependencies": {
+    "@graphql-cli/codegen": "1.17.23",
+    "@graphql-cli/diff": "2.1.0",
+    "@graphql-cli/similar": "2.1.0",
+    "@graphql-codegen/cli": "1.21.4",
+    "@graphql-codegen/introspection": "1.18.2",
+    "@graphql-codegen/typescript": "1.22.0",
+    "@graphql-codegen/typescript-resolvers": "1.19.1",
+    "@types/node": "^8.0.29",
+    "prettier": "^2.3.0",
+    "ts-node": "9.1.1",
+    "tslint": "^6.1.3",
+    "typescript": "4.2.4"
+  },
+  "scripts": {
+    "start": " nodemon --exec ts-node src/index.ts",
+    "tslint-check": "tslint-config-prettier-check ./tslint.json",
+    "graphql:codegen": "graphql codegen",
+    "graphql:diff": "graphql diff",
+    "graphql:similar": "graphql similar",
+    "generate": "graphql-codegen --config codegen.yml"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }
