@@ -23,6 +23,7 @@ export declare namespace GQL {
   interface IQuery {
     __typename: 'Query';
     hello: string;
+    authHello: string;
     user: IUser;
     users: Array<IUser>;
   }
