@@ -1,10 +1,12 @@
 import 'reflect-metadata';
 import * as path from 'path';
 import { GraphQLServer } from 'graphql-yoga';
+
 import { importSchema } from 'graphql-import';
 import * as argon2 from 'argon2';
 import * as jwt from 'jsonwebtoken';
 import * as dotenv from 'dotenv';
+import cookieParser from 'cookie-parser';
 
 import { ResolverMap } from './types/ResolverTypes';
 import { Options } from './types/OptionsTypes';
@@ -19,6 +21,12 @@ const resolvers: ResolverMap = {
   Query: {
     hello: (_, { name }: GQL.IHelloOnQueryArguments) =>
       `Hello ${name || 'World'}`,
+    authHello: (_, __, { userId }) => {
+      if (!userId) {
+        return `Could not find a Cookie for you to eat, Starve in agnoy :3`;
+      }
+      return `YIKES!! Cookies's been found. your Id is ${userId}`;
+    },
     user: async (_, { id }: GQL.IUserOnQueryArguments) =>
       await User.findOne(id, { relations: ['profile'] }),
     users: async () => await User.find({ relations: ['profile'] }),
@@ -102,8 +110,9 @@ const options: Options = {
   },
 };
 
-const context = (req:any) => ({
+const context = (req: any) => ({
   req: req.request,
+  userId: req.userId,
 });
 
 const server = new GraphQLServer({
@@ -112,6 +121,20 @@ const server = new GraphQLServer({
   context,
 });
 
+
+server.express.use(cookieParser());
+server.express.use((req: any, res, next) => {
+  try {
+    const { token } = req.cookies;
+    if (token) {
+      const { userId }: any = jwt.verify(token, process.env.JWT_SECRET);
+      req.userId = userId;
+    }
+    return next();
+  } catch (error) {
+    res.send(error);
+  }
+});
 
 server
   .start(options, ({ port }) => {
