@@ -1,12 +1,12 @@
 import 'reflect-metadata';
 import * as path from 'path';
 import { GraphQLServer } from 'graphql-yoga';
+import session from 'express-session';
+import ms from 'ms';
 
 import { importSchema } from 'graphql-import';
 import * as argon2 from 'argon2';
-import * as jwt from 'jsonwebtoken';
 import * as dotenv from 'dotenv';
-import cookieParser from 'cookie-parser';
 
 import { ResolverMap } from './types/ResolverTypes';
 import { Options } from './types/OptionsTypes';
@@ -21,11 +21,11 @@ const resolvers: ResolverMap = {
   Query: {
     hello: (_, { name }: GQL.IHelloOnQueryArguments) =>
       `Hello ${name || 'World'}`,
-    authHello: (_, __, { userId }) => {
-      if (!userId) {
+    authHello: (_, __, { req }) => {
+      if (!req.session.userId) {
         return `Could not find a Cookie for you to eat, Starve in agnoy :3`;
       }
-      return `YIKES!! Cookies's been found. your Id is ${userId}`;
+      return `YIKES!! Cookies's been found. your Id is ${req.session.userId}`;
     },
     user: async (_, { id }: GQL.IUserOnQueryArguments) =>
       await User.findOne(id, { relations: ['profile'] }),
@@ -69,7 +69,7 @@ const resolvers: ResolverMap = {
     registerUser: async (
       _,
       args: GQL.IRegisterUserOnMutationArguments,
-      { res },
+      { req, res },
     ) => {
       try {
         const password = await argon2.hash(args.password);
@@ -79,19 +79,7 @@ const resolvers: ResolverMap = {
         });
         await user.save();
 
-        const token = jwt.sign(
-          {
-            userId: user.id,
-          },
-          process.env.JWT_SECRET,
-          { expiresIn: '7d' },
-        );
-
-        res.cookie('id', token, {
-          httpOnly: true,
-          secure: process.env.NODE_ENV === 'production',
-          maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
-        });
+        req.session.userId = user.id;
         return true;
       } catch (error) {
         return res.send(error);
@@ -111,8 +99,7 @@ const options: Options = {
 };
 
 const context = (req: any) => ({
-  req: req.request,
-  userId: req.userId,
+  req,
 });
 
 const server = new GraphQLServer({
@@ -121,16 +108,27 @@ const server = new GraphQLServer({
   context,
 });
 
+// session middleware
+server.express.use(
+  session({
+    name: 'qid',
+    secret: process.env.SECRET,
+    resave: true,
+    saveUninitialized: false,
+    cookie: {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: ms('1d'),
+    },
+  }),
+);
 
-server.express.use(cookieParser());
 server.express.use((req: any, res, next) => {
   try {
-    const { token } = req.cookies;
-    if (token) {
-      const { userId }: any = jwt.verify(token, process.env.JWT_SECRET);
-      req.userId = userId;
+    if (req.session) {
+      console.log(req.session);
+      return next();
     }
-    return next();
   } catch (error) {
     res.send(error);
   }
