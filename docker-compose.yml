@@ -1,8 +1,23 @@
 version: '3'
 services:
+  web:
+    build: .
+    command: npm start
+    volumes:
+      - .:/usr/node-ts-graphql-bolierplate/
+      - /usr/node-ts-graphql-bolierplate/node_modules
+    env_file:
+        - ./.env  
+    ports:
+      - "4000:4000"
+    depends_on:
+      - postgres
+    environment:
+      DATABASE_URL: postgres://test@postgres/test
 
   postgres:
-    image: "postgres:9.6.1"
+    image: postgres:9.6.2-alpine
+    restart: always
     ports:
       - "5432:5432"
     environment:
