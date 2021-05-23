@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import * as path from 'path';
-import { GraphQLServer } from 'graphql-yoga';
+import { GraphQLServer, Options } from 'graphql-yoga';
 import session from 'express-session';
 import ms from 'ms';
 
@@ -9,7 +9,6 @@ import * as argon2 from 'argon2';
 import * as dotenv from 'dotenv';
 
 import { ResolverMap } from './types/ResolverTypes';
-import { Options } from './types/OptionsTypes';
 import { User } from './entity/User';
 import { Profile } from './entity/Profile';
 import { GQL } from './generated/types';
@@ -95,6 +94,9 @@ const options: Options = {
   cors: {
     credentials: true,
     origin: [process.env.DEVELOPMENT_HOST],
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
   },
 };
 
