@@ -9,19 +9,16 @@ import { resolvers } from './schema/resolvers';
 import { sessionMiddleware } from './middleware/session';
 import { serverOptions, SESSION_OPTIONS } from './utils/constants';
 
-
 const typeDefs = importSchema(
   path.join(__dirname, './schema/typeDefs/userSchema.graphql'),
 );
 
-const context = (req: any) => ({
-  req,
-});
-
 const server = new GraphQLServer({
   typeDefs,
   resolvers,
-  context,
+  context: (req) => ({
+    req,
+  }),
 });
 
 // session middleware
