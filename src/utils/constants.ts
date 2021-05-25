@@ -1,7 +1,9 @@
+import * as dotenv from 'dotenv';
 import { Options } from 'graphql-yoga';
 import { SessionOptions } from 'express-session';
 import ms from 'ms';
 
+dotenv.config();
 
 export const serverOptions: Options = {
   port: process.env.PORT || 3000,

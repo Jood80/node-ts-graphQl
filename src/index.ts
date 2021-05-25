@@ -3,14 +3,13 @@ import * as path from 'path';
 
 import { GraphQLServer } from 'graphql-yoga';
 import { importSchema } from 'graphql-import';
-import * as dotenv from 'dotenv';
+import session from 'express-session';
 
 import { resolvers } from './schema/resolvers';
 import { sessionMiddleware } from './middleware/session';
 import { serverOptions, SESSION_OPTIONS } from './utils/constants';
-import session from 'express-session';
 
-dotenv.config();
+
 const typeDefs = importSchema(
   path.join(__dirname, './schema/typeDefs/userSchema.graphql'),
 );
