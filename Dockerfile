@@ -1,5 +1,5 @@
 FROM node:10 as compile-server
-WORKDIR /home/inspiron/Documents/zeroToMastery/node-ts-graphql-bolierplate
+WORKDIR .
 COPY package*.json ./
 RUN npm install
 RUN npm build
